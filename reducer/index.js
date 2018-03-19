@@ -24,45 +24,43 @@ let loginReducer = (state = initstate, action) => {
 	}
 }
 
-let start = {
-	count : null,
-	cards : []
-};
+let cards = [];
 
-let cardReducer = (state = start, action) => {
+let cardReducer = (state = cards, action) => {
 	switch(action.type){
-		case types.UPDATESTORE :
+		case types.ADDSTORE :
 			return {
 				...state,
-				count : action.payload.count,
-				cards : action.payload.cards
+				action.payload
 			}
+
+		case types.DELETESTORE :
+			return {
+				...state,
+				action.payload
+			}
+			
+		case types.DISPLAYSTORE :
+			return {
+				...state,
+				action.payload
+			}
+			
+		case types.DELETEALL :
+			return {
+				...state,
+				cards : []
+				
+			}			
 
 		default :
 			return {
 				...state,
-				count : null,
 				cards : []
 			}	
 			
 	}
 }
-
-/*const cardinit = {};
-
-let cardReducer = (state = cardinit, action) => {
-	switch(action.type) {
-		case types.CARDUPDATE :
-			return {
-				...state,
-				action.payload.data
-			}
-
-		// one case of delete action, return is same
-		
-		// as all return are same hence I guess no case and default case only can do the trick	
-	}
-}*/
 
 const rootReducer = combineReducers({
 						loginState : loginReducer,

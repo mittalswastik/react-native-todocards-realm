@@ -25,10 +25,10 @@ class Task extends Component {
 		return (
 			<Card>
 				<CardTitle>
-					<Text>nothiing</Text>
+					<Text>{this.props.data.title}</Text>
 				</CardTitle>
 				<CardContent>
-					<Text>testing</Text>
+					<Text>{this.props.data.content}</Text>
 				</CardContent>
 				<CardAction>
 					<Button title="delete" onPress={this.props.del(this.props.i)}/>

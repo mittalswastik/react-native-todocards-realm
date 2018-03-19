@@ -10,7 +10,8 @@ import {
   Button
 } from 'react-native';
 import { login } from '../action/index.js';
-import { getAsyncStore , setAsyncStore } from '../utils';
+const Realm = require('realm');
+import { CardsSchema } from '../constant';
 
 const styles = {
 	viewStyle : {
@@ -57,8 +58,6 @@ class New extends Component{
   		password : null
   	}
   	this.handleLogin = this.handleLogin.bind(this);
-  //	this.setStorage = this.setStorage.bind(this);
-  	//this.FunctionToOpenSecondActivity = this.FunctionToOpenSecondActivity.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -76,127 +75,15 @@ class New extends Component{
   	this.props.login(data.username , data.password);
   
   }
-  
-
-  /*setStorage = async () => {
-  	
-  	try {
-
-  		let value = await AsyncStorage.getItem('cards');
-
-  		console.log(value);
-
-  		if( value == null) {
-  			
-  			let obj = {
-  					count: 3,
-  					cards: [
-	  					{
-	  						title : "test1",
-	  						content : "content1"
-	  					},
-
-	  					{
-	  						title : "test2",
-	  						content : "content2"	
-	  					},
-
-	  					{
-	  						title : "test3",
-	  						content : "content3"
-	  					}
-  					]
-  				};
-
-
-  			AsyncStorage.setItem('cards',JSON.stringify(obj)).then(()=>{
-  				console.log("setting up asycn storage");
-  			});
-
-  			Actions.activity({test:"testing"});
-
-  		}
-
-  	} catch(e) {
-  		console.log("error");
-
-  	}
-  }*/
 
   render() {
 
+
   	if(this.state.password != null) {
-  		//navigate to next activity
+  		
+  		Actions.activity();
 
-  		//this.setStorage();
-
-  		let value = getAsyncStore('cards');
-
-  		if( value == null) {
-  			
-  			let obj = {
-  					count: 3,
-  					cards: [
-	  					{
-	  						title : "test1",
-	  						content : "content1"
-	  					},
-
-	  					{
-	  						title : "test2",
-	  						content : "content2"	
-	  					},
-
-	  					{
-	  						title : "test3",
-	  						content : "content3"
-	  					}
-  					]
-  				};
-
-
-  			setAsyncStore('cards' , obj);
-
-  			value = obj;
-
-  		} else {
-  			value = JSON.parse(value);
-  		}
-
-  		Actions.activity({ object : value });
-  	/*	let value = AsyncStorage.getItem('cards').then((values) => {
-  			return values;
-  		});
-
-  		console.log(value);
-
-  		if( value == null) {
-  			
-  			let obj = {
-  					count: 3,
-  					cards: [
-	  					{
-	  						title : "test1",
-	  						content : "content1"
-	  					},
-
-	  					{
-	  						title : "test2",
-	  						content : "content2"	
-	  					},
-
-	  					{
-	  						title : "test3",
-	  						content : "content3"
-	  					}
-  					]
-  				};
-
-
-  			AsyncStorage.setItem('cards',JSON.stringify(obj)).then(()=>{
-  				console.log("setting up asycn storage");
-  			});
-  		} */
+  	
   	}
 
     return (
@@ -220,10 +107,9 @@ class New extends Component{
   }
 }
 
-function mapStateToProps(loginState,cardState){
+function mapStateToProps(loginState){
 	return {
-		loginState, 
-		cardState
+		loginState
 	}
 }
 

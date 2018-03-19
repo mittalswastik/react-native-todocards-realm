@@ -1,9 +1,13 @@
-import { setAsyncStore , removeAsyncStoreKey } from '../utils';
+const Realm = require('realm');
+import { CardsSchema } from '../constant';
 
 export const types = {
 	LOGIN:'LOGIN',
 	SIGNUP:'SIGNUP',
-	UPDATESTORE:'UPDATESTORE'
+	ADDSTORE:'UPDATESTORE',
+	DELETESTORE: 'DELETESTORE',
+	DISPLAYSTORE: 'DISPLAYSTORE',
+	DELETEALL: 'DELETEALL'
 }
 
 export function login(username, password) {
@@ -33,35 +37,99 @@ export function signup(username, password) {
     // send request to api then execute the action and in component display successfully registered and then direct to login page
 }
 
-export function updateStorage(values){ // here key is the position of card in card array
-	
-
-	removeAsyncStoreKey('cards');
-	setAsyncStore('cards' , values);
-
-	//let data = asyncstorage info 
-
-	//access asynstorage here and delete key position card object compelete info and update storage
+export function deleteAll(){
+	Realm.open({schema : [ CardsSchema ]})
+		.then(realm => {
+			realm.write(()=> {
+				let allcards = realm.objects('todo'); 
+  				realm.delete(allcards);
+			});
+		}
 
 	return {
-		type : types.UPDATESTORE,
-		payload : values // no payload required
+		type : types.DELETEALL,
+		payload : null
+	}
+}
+
+export function deleteStorage(key){ // here key is the position of card in card array
+
+	Realm.open({schema : [ CardsSchema ]})
+		.then(realm => {
+			realm.write(()=> {
+				let allcards = realm.objects('todo'); // apply filter here, this will delete all
+  				realm.delete(allcards); // Deletes all
+			});
+
+			const carddetails = realm.objects('todo');
+  			let values = Array.from(carddetails);
+
+		}
+
+	return {
+		type : types.DELETESTORE,
+		payload : values
 	}
 
 }
-/*
-other function would be cardupdate for add and display both. no key required so one action does both
-	function action(choice) // here if choice is a then add and if d then display
 
-	// here it can be a case where async storage empt then send no info and in case add create storage key value
-*/
+export function addStorage(title , content){
+	Realm.open({schema : [ CardsSchema ]})
+		.then(realm => {
+			realm.write(()=> {
+				const task = Realm.create('todo', {
+					title : title,
+					content : content
+				});
+			});
 
-/*export function addCard(){
-	
+			const carddetails = realm.objects('todo');
+  			let values = Array.from(carddetails);
+		}
 
 	return {
-		type : types.ADDCARD,
-		payload : null // no payload required
-	}
-}*/
+		type : types.ADDSTORE,
+		payload : values // no payload required
+	}	
+}
 
+export function displayStore(){
+	Realm.open({schema : [ CardsSchema ]})
+		.then(realm => {
+
+				const carddetails = realm.objects('todo');
+  				let values = Array.from(carddetails);
+
+			} catch(e) {
+				let values = [];
+			}
+		}
+
+	return {
+		type : types.DISPLAYSTORE,
+		payload : values
+	}	
+}
+
+
+/*Realm.open({schema : [ CardsSchema ]})
+  			.then(realm => {
+  				realm.write(()=> {
+  					const task = realm.create('todo', {
+  						title : "title2",
+  						content : "content2"
+  					});
+  				});
+  				const carddetails = realm.objects('todo');
+  				let values = Array.from(carddetails);
+  			}).catch(error => {
+
+  				Realm.write(()=> {
+  					const task = Realm.create('todo', {
+  						title : "title1",
+  						content : "content1"
+  					});
+  				});
+
+  				console.log(error);
+  			});*/

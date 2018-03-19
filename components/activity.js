@@ -8,69 +8,50 @@ import {
   Button,
   ScrollView
 } from 'react-native';
-import { updateStorage } from '../action/index.js';
+import { addStorage , deleteStorage , deleteAll , displayStorage } from '../action/index.js';
 import Task from './cards/card';
+import { Realm } from 'realm';
 
 
 class Activity extends Component {
 	constructor(props){
 		super(props);
-		/*this.state = {
-			numer : this.props.n, // to be returned by the reducer
-			obj : this.props.obj 
-		}*/
 
 		this.state = {
-			obj : this.props.object
+			values : []
 		}
-		//setstate
+		
 		this.deletecards = this.deletecards.bind(this);
 		this.addcards = this.addcards.bind(this);
 		this.setCard = this.setCard.bind(this);
 		this.retrieveStorage = this.retrieveStorage.bind(this);
 	}
 
+	componentWillMount(){
+		this.props.displayStorage();
+	}
+
+	componentWillReceiveProps(nextProps) {
+		this.props.displayStorage();
+		this.setState({
+			values : nextProps.cardState.cardState
+		})
+	}
+
 	retrieveStorage(act,key) {
-	  	
-  		let value = this.state.obj;
-  		let cnt = 0;
-  		let cardsarray = [];
-  		let newobj = {};
   		
-		if(value != null) {
-			switch(act){
-				case "d" :  cnt = value.count - 1;
-							cardsarray = [...value.cards].splice(key-1,1);
-							newobj = {
-								count : cnt,
-								cards : cardsarray
-							}
-							this.props.updateStorage(newobj);
+		switch(act){
+			case "d" : 
+						this.props.deleteStorage(key);
 
-						break;
+					break;
 
-				case "a" :  cnt = value.count + 1;
-							cardsarray = [...value.cards];
-							let object = {
-								title : "test",
-								content : "testing"
-							}
+			case "a" :  
+						this.props.addStorage("temp. title", "temp. content");
 
-							cardsarray.push(object);
-							newobj = {
-								count : cnt,
-								cards : cardsarray
-							}
-							this.props.updateStorage(newobj);
-
-						break;	
-				
-				default : console.log("not needed");		
-			}
-		} else {
-			console.log("not working");
-			console.log(value);
-		}
+					break;	
+			
+			default : console.log("not needed");	
     }
 
 	deletecards(key) {
@@ -88,16 +69,12 @@ class Activity extends Component {
 
 		let cardds = [];
 
-		console.log("--------------------------------------------------");
-		console.log(this.state.obj);
-		console.log(this.state.obj.count);
-
-		if(Object.keys(this.state.obj) != 0) {
-			cardds = Object.keys(this.state.obj).map((x,index) => {
-				return <Task i={index} del={this.deletecards} />
+		if(this.state.values.length != 0) {
+			cardds = this.state.values.map((x,index) => {
+				return <Task data={x} i={index} del={this.deletecards} />
 			})
 		} else {
-			cardds.push(<Text> wait... </Text>);
+			return null;
 		}
 
 
@@ -116,15 +93,25 @@ class Activity extends Component {
 					{card}
 				</ScrollView>
 				<Button title="add card" onPress={this.addcards}/>
+				<Button title="delete all" onPress={this.props.deleteAll()} >
 			</View>	
 		);
 	}
 }
 
+function mapStateToProps(cardState){
+	return {
+		cardState
+	}
+}
+
 function mapDispatchToProps(dispatch){
 	return bindActionCreators({
-		updateStorage
+		addStorage,
+		deleteStorage,
+		displayStorage,
+		deleteAll
 	} , dispatch)
 }
 
-export default connect(null , mapDispatchToProps)(Activity);
+export default connect(mapStateToProps , mapDispatchToProps)(Activity);
